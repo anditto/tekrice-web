@@ -290,23 +290,24 @@ def get_data_for_site(site)
   if !File.exist?(cache_file) || (File.mtime(cache_file) < (Time.now - 60*60))
     api_link = "http://satoyamacloud.com/site/" + site_id_hash[site].to_s
     #api_link = "http://128.199.120.30/site/" + site_id_hash[site].to_s
-    all_data_call = Net::HTTP.get_response(URI.parse( api_link ))
+    #TODO Currently gives out SocketError
+    #all_data_call = Net::HTTP.get_response(URI.parse( api_link ))
     
     # Inserts new data into cache file
-    if all_data_call.code == "200"
-      # Clean up data for null values, misordered keys, etc.
-      @all_data = cleanup_sitedata(JSON.parse(all_data_call.body))
-      #@all_data = JSON.parse(all_data_call.body)
+    #if all_data_call.code == "200"
+    #  # Clean up data for null values, misordered keys, etc.
+    #  @all_data = cleanup_sitedata(JSON.parse(all_data_call.body))
+    #  #@all_data = JSON.parse(all_data_call.body)
 
-      File.open(cache_file, "w"){ |f| f << @all_data.to_json }
-      @all_data = File.read(cache_file)
-    else
+    #  File.open(cache_file, "w"){ |f| f << @all_data.to_json }
+    #  @all_data = File.read(cache_file)
+    #else
       if File.exist?(cache_file)
         @all_data = File.read(cache_file)
       else
         @all_data = test_data
       end
-    end
+    #end
   else
     @all_data = File.read(cache_file)
   end
@@ -480,27 +481,29 @@ end
 def get_site_list
   site_hash = {}
 
+  #TODO Currently gives out SocketError
   api_link = "http://satoyamacloud.com/sites"
   #api_link = "http://128.199.120.30/sites"
-  all_data_call = Net::HTTP.get_response(URI.parse( api_link ))
+  #all_data_call = Net::HTTP.get_response(URI( api_link ))
 
-  if all_data_call.code == "200"
-    all_data = JSON.parse(all_data_call.body)
-    all_data["objects"].each do |site|
-      if !site["alias"].nil?
-        site_hash[ site["alias"].downcase.gsub(" ", "") ] = site["id"]
-      else
-        #TODO Placeholder
-        site_hash[ site["id"] ] = site["id"]
-      end
-    end
-  else
-    #TODO Use dummy data
+  #case all_data_call
+  #when Net::HTTPSuccess then
+  #  all_data = JSON.parse(all_data_call.body)
+  #  all_data["objects"].each do |site|
+  #    if !site["alias"].nil?
+  #      site_hash[ site["alias"].downcase.gsub(" ", "") ] = site["id"]
+  #    else
+  #      # Placeholder
+  #      site_hash[ site["id"] ] = site["id"]
+  #    end
+  #  end
+  #else
+    #Use dummy data
     site_hash = {
       "hackerfarm"    => 1,
       "digitalgarage" => 2
     }
-  end
+  #end
 
   return site_hash
 end
