@@ -95,7 +95,9 @@ show_sensor_data = lambda do
           @node_data = get_reading_for_node( x["id"] )
           i = 0
           (-7..-1).each do |j|
-            dataset[i]["value"] = (@node_data[j]).round(2)
+            #dataset[i]["value"] = (@node_data[j]).round(2)
+            # Dummy Data
+            dataset[i]["value"] = rand(0..100)
             i+=1
           end
         end
@@ -202,7 +204,6 @@ show_map_data = lambda do
   end
 
   @site_data = get_data_for_site(params[:site])
-  p @site_data
 
   node_list  = get_node_list(@site_data)
 
@@ -501,7 +502,10 @@ def get_site_list
     #Use dummy data
     site_hash = {
       "hackerfarm"    => 1,
-      "digitalgarage" => 2
+      "digitalgarage" => 2,
+      "dgkamakura"    => 3,
+      "halfdan_home"  => 4,
+      "sanfrancisco"  => 5
     }
   #end
 
@@ -511,19 +515,25 @@ end
 def get_reading_for_node(node_id)
   api_link = "http://satoyamacloud.com/readings?sensor_id=" + node_id.to_s
   #api_link = "http://128.199.120.30/readings?sensor_id=" + node_id.to_s
-  all_data_call = Net::HTTP.get_response(URI.parse( api_link ))
+  #all_data_call = Net::HTTP.get_response(URI.parse( api_link ))
 
-  if all_data_call.code == "200"
-    all_data = JSON.parse(all_data_call.body)
-    sensor_alias = all_data["objects"][0]["sensor"][0]["alias"]
-    value = []
+  #if all_data_call.code == "200"
+  #  all_data = JSON.parse(all_data_call.body)
+  #else
+    # Dummy data
+    file = File.join("cache", "halfdan_home")
+    all_data = JSON.parse(File.read(file))
+  #end
 
-    all_data["objects"].each do |reading|
-      value << reading["value"]
-    end
-  else
-    #TODO Exception handling
-  end
+  #sensor_alias = all_data["objects"][0]["sensor"][0]["alias"]
+  value = []
+
+  #all_data["objects"].each do |reading|
+  #  value << reading["value"]
+  #end
+
+  # Dummy data
+  value = [ rand(0..35), rand(40..60), rand(50..70), rand(0..100)]
 
   return value
 end
